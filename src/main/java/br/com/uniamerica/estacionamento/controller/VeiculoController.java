@@ -59,29 +59,33 @@ public class VeiculoController {
         }
     }
 
-    @PutMapping
-    public ResponseEntity<?> editar(@RequestParam("id") final Long id, @RequestBody final Veiculo veiculo) {
+    @PutMapping("/{id}")
+    public ResponseEntity<?> editar(
+            @PathVariable("id") final Long id,
+            @RequestBody final Veiculo veiculo
+    ) {
         try {
-            final Veiculo veiculo1 = this.veiculoRep.findById(id).orElse(null);
-
-            if (veiculo1 == null || !veiculo1.getId().equals(veiculo.getId())) {
-                throw new RuntimeException("Registro não identificado");
-            }
-            veiculoServ.VerificarVeiculo(veiculo);
-            return ResponseEntity.ok("O registro foi cadastrado com sucesso");
+            this.veiculoServ.AtualizaVeiculo(veiculo);
+            return ResponseEntity.ok("Registro atualizado com sucesso. ");
         } catch (DataIntegrityViolationException e) {
-            return ResponseEntity.internalServerError()
-                    .body("Error: " + e.getCause().getCause().getMessage());
+            return ResponseEntity.internalServerError().body("Error: " + e.getCause().getCause().getMessage());
         } catch (RuntimeException e) {
             return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
         }
-
     }
 
 
-    @DeleteMapping("delete/{id}")
-    public ResponseEntity<?> deletaVeiculo(@PathVariable Long id) {
-        return veiculoServ.deletar(id);
-
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(
+            @PathVariable("id") final Long id
+    ) {
+        try {
+            this.veiculoServ.deletar(id);
+            return ResponseEntity.ok("Registro excluido com sucesso.");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
+        }
     }
 }
