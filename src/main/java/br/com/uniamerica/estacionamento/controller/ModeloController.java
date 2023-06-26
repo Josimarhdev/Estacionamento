@@ -63,30 +63,33 @@ public class ModeloController {
         }
     }
 
-    @PutMapping
-    public ResponseEntity<?> editar(@RequestParam("id") final Long id, @RequestBody final Modelo modelo){
+    @PutMapping("/{id}")
+    public ResponseEntity<?> editar(
+            @PathVariable("id") final Long id,
+            @RequestBody final Modelo modelo
+    ) {
         try {
-            final Modelo modelo1 = this.modeloRep.findById(id).orElse(null);
-
-            if (modelo1 == null || !modelo1.getId().equals(modelo.getId())){
-                throw new RuntimeException("Registro não identificado");
-            }
-            this.modeloServ.VerificarModelo(modelo);
-            return ResponseEntity.ok("O registro foi Cadastrado com Sucesso");
+            this.modeloServ.AtualizaModelo(modelo);
+            return ResponseEntity.ok("Registro atualizado com sucesso. ");
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.internalServerError().body("Error: " + e.getCause().getCause().getMessage());
+        } catch (RuntimeException e) {
+            return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
         }
-        catch (DataIntegrityViolationException e){
-            return ResponseEntity.internalServerError()
-                    .body("Error1: " + e.getCause().getCause().getMessage());
-        }
-        catch (RuntimeException e){
-            return ResponseEntity.internalServerError().body("Error2: " + e.getMessage());
-        }
-
     }
 
-    @DeleteMapping("delete/{id}")
-    public ResponseEntity<?> deletaModelo(@PathVariable Long id) {
-        return modeloServ.deletar(id);
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(
+            @PathVariable("id") final Long id
+    ) {
+        try {
+            this.modeloServ.deletar(id);
+            return ResponseEntity.ok("Registro excluido com sucesso.");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
+        }
     }
 }

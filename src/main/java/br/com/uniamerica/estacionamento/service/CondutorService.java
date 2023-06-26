@@ -49,6 +49,7 @@ public class  CondutorService {
         Assert.isTrue(condutor.getTelefone().substring(0,11).matches("[0-9]*"),"Telefone deve conter apenas números!");
         Assert.isTrue(telefoneExistente == null || telefoneExistente.equals(condutor),"Telefone já cadastrado!");
 
+        condutor.setAtivo(true);
         this.condutorRepository.save(condutor);
     }
 
@@ -74,7 +75,7 @@ public class  CondutorService {
 
         Assert.isTrue(condutor.getTelefone().substring(0,11).matches("[0-9]*"),"Telefone deve conter apenas números!");
 
-
+        condutor.setAtivo(true);
         this.condutorRepository.save(condutor);
     }
 

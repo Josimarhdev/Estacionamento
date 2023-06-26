@@ -36,7 +36,7 @@ public class VeiculoService {
 
         Assert.isTrue(!veiculo.getTipo().equals(""),"O tipo não pode ser nulo!");
         //Assert.isTrue(veiculo.getTipo().length() <= 20,"O tipo deve conter até 20 digitos") ;
-        
+
         veiculo.setAtivo(true);
         this.veiculoRepository.save(veiculo);
     }

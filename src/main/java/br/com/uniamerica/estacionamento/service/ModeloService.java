@@ -38,6 +38,23 @@ public class ModeloService {
 
     }
 
+    public void AtualizaModelo (Modelo modelo){
+        Assert.isTrue(!modelo.getNome().equals(""),"Modelo não pode ser nulo");
+        Assert.isTrue(modelo.getNome().length() <= 50, "Deve conter até 50 digitos");
+
+
+
+
+        Assert.isTrue(modelo.getMarca() != null,"Marca não pode ser nulo");
+
+
+
+        modelo.setAtivo(true);
+
+        this.modeloRepository.save(modelo);
+
+    }
+
 
 
 
