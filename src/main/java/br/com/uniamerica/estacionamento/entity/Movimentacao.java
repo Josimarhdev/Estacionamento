@@ -18,11 +18,11 @@ public class    Movimentacao extends AbstractEntity {
     @JoinColumn(name = "veiculo", nullable = false, unique = true)
     private Veiculo veiculo;
     @Getter @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "condutor", nullable = false)
     private Condutor condutor;
     @Getter @Setter
-    @Column(name = "entrada",nullable = false)
+    @Column(name = "entrada")
     private LocalDateTime entrada;
     @Getter @Setter
     @Column(name = "saida")

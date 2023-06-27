@@ -11,6 +11,7 @@ import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -30,9 +31,10 @@ public class MovimentacaoService {
 
         Assert.isTrue(movimentacao.getCondutor()!=null,"O condutor nao pode ser nulo!");
 
-        Assert.isTrue(!movimentacao.getEntrada().equals(""),"A entrada não pode ser nula!");
+
 
         movimentacao.setAtivo(true);
+        movimentacao.setEntrada(LocalDateTime.now());
         this.movimentacaoRepository.save(movimentacao);
 
     }
@@ -40,7 +42,7 @@ public class MovimentacaoService {
 
     public ResponseEntity<?> AtualizaMovimentacao(Movimentacao movimentacao, Long id){
 
-
+        movimentacao.setSaida(LocalDateTime.now());
         final Movimentacao movimentacao1 = this.movimentacaoRepository.findById(id).orElse(null);
 
 
