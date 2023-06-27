@@ -31,5 +31,16 @@ public class ConfiguracaoService {
 
     }
 
+    public void atualizaConfig(Configuracao configuracao){
+
+
+
+
+
+
+        this.configuracaoRep.save(configuracao);
+
+    }
+
 
 }

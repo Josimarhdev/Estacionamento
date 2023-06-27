@@ -1,6 +1,7 @@
 package br.com.uniamerica.estacionamento.controller;
 
 import br.com.uniamerica.estacionamento.entity.Condutor;
+import br.com.uniamerica.estacionamento.entity.Modelo;
 import br.com.uniamerica.estacionamento.entity.Movimentacao;
 import br.com.uniamerica.estacionamento.repository.MovimentacaoRepository;
 import br.com.uniamerica.estacionamento.service.MovimentacaoService;
@@ -53,16 +54,15 @@ public class MovimentacaoController {
         }
     }
 
-    @PutMapping
-    public ResponseEntity<?> editar(@RequestParam("id") final Long id, @RequestBody final Movimentacao movimentacao){
+    @PutMapping("/{id}")
+    public ResponseEntity<?> editar(@PathVariable("id") final Long id, @RequestBody final Movimentacao movimentacao){
         try {
             final Movimentacao movimentacao1 = this.movimentacaoRep.findById(id).orElse(null);
 
             if (movimentacao1 == null || !movimentacao1.getId().equals(movimentacao.getId())){
-                throw new RuntimeException("Nao foi possivel identificar o registro informado");
+                throw new RuntimeException("Nao foi possivel indentificar o registro informado");
             }
-
-            return movimentacaoServ.AtualizaMovimentacao(movimentacao, id);
+            return  movimentacaoServ.AtualizaMovimentacao(movimentacao,id);
         }
         catch (DataIntegrityViolationException e){
             return ResponseEntity.internalServerError()
@@ -71,8 +71,8 @@ public class MovimentacaoController {
         catch (RuntimeException e){
             return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
         }
-
     }
+
 
     @DeleteMapping("delete/{id}")
     public ResponseEntity<?> deletaMovimentacao(@PathVariable Long id) {

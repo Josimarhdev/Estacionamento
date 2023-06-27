@@ -2,6 +2,7 @@ package br.com.uniamerica.estacionamento.controller;
 
 
 import br.com.uniamerica.estacionamento.entity.Configuracao;
+import br.com.uniamerica.estacionamento.entity.Marca;
 import br.com.uniamerica.estacionamento.repository.ConfiguracaoRepository;
 import br.com.uniamerica.estacionamento.service.ConfiguracaoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,12 @@ public class ConfiguracaoController {
         return ResponseEntity.ok(configuracao);
     }
 
+    @GetMapping("/lista")
+    public ResponseEntity <?> ListaCompleta(){
+        return ResponseEntity.ok(this.configuracaoRep.findAll());
+
+    }
+
 
 
 
@@ -43,26 +50,24 @@ public class ConfiguracaoController {
         }
     }
 
-    @PutMapping
-    public ResponseEntity<?> editar(@RequestParam("id") final Long id, @RequestBody final Configuracao configuracao){
+    @PutMapping("/{id}")
+    public ResponseEntity<?> editar(
+            @PathVariable("id") final Long id,
+            @RequestBody final Configuracao configuracao
+    ){
         try {
-            final Configuracao configuracao1 = this.configuracaoRep.findById(id).orElse(null);
-
-            if (configuracao1 == null || !configuracao1.getId().equals(configuracao.getId())){
-                throw new RuntimeException("Nao foi possivel identificar o registro informado");
-            }
-            this.configuracaoRep.save(configuracao);
-            configuracaoServ.cadastrarConfig(configuracao);
-            return ResponseEntity.ok("Registro Cadastrado com Sucesso");
+            this.configuracaoServ.atualizaConfig(configuracao);
+            return ResponseEntity.ok("Registro atualizado com sucesso. ");
         }
         catch (DataIntegrityViolationException e){
-            return ResponseEntity.internalServerError()
-                    .body("Error: " + e.getCause().getCause().getMessage());
+            return ResponseEntity.internalServerError().body("Error: " + e.getCause().getCause().getMessage());
         }
         catch (RuntimeException e){
             return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
         }
-
+        catch (Exception e){
+            return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
+        }
     }
 
 
