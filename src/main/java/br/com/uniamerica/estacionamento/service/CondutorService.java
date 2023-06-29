@@ -2,7 +2,9 @@ package br.com.uniamerica.estacionamento.service;
 
 import br.com.uniamerica.estacionamento.config.ValidaCPF;
 import br.com.uniamerica.estacionamento.entity.Condutor;
+import br.com.uniamerica.estacionamento.entity.Marca;
 import br.com.uniamerica.estacionamento.entity.Modelo;
+import br.com.uniamerica.estacionamento.entity.Movimentacao;
 import br.com.uniamerica.estacionamento.repository.CondutorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -26,8 +29,12 @@ public class  CondutorService {
 
 
     public void VerificarCondutor (final Condutor condutor){
+        Assert.isTrue(condutor.getNome()!=null,"O nome do condutor não pode nulo!");
         Assert.isTrue(!condutor.getNome().equals(""),"O nome do condutor não pode nulo!");
         Assert.isTrue(condutor.getNome().length() <= 100 ,"O nome deve ter no máximo 100 digitos") ;
+        Assert.isTrue(condutor.getCpf()!=null,"O cpf do condutor não pode nulo!");
+        Assert.isTrue(!condutor.getCpf().equals(""),"O cpf do condutor não pode nulo!");
+
 
 
 
@@ -43,7 +50,7 @@ public class  CondutorService {
         Condutor cpfExistente = condutorRepository.findByCpf(condutor.getCpf());
         Assert.isTrue(cpfExistente == null || cpfExistente.equals(condutor),"Condutor já cadastrado!");
 
-        Assert.isTrue(!condutor.getTelefone().equals(""),"O telefone não pode ser nulo!");
+        Assert.isTrue(condutor.getTelefone()!=null,"O telefone não pode ser nulo!");
         Assert.isTrue(condutor.getTelefone().length() == 11 ,"O numero deve ter 11 digitos, contando o DDD") ;
         Condutor telefoneExistente = condutorRepository.findByTelefone(condutor.getTelefone());
         Assert.isTrue(condutor.getTelefone().substring(0,11).matches("[0-9]*"),"Telefone deve conter apenas números!");
@@ -53,10 +60,15 @@ public class  CondutorService {
         this.condutorRepository.save(condutor);
     }
 
+
+    @Transactional(rollbackFor = Exception.class)
+
     public void atualizaCondutor (Condutor condutor){
+        Assert.isTrue(condutor.getNome()!=null,"O nome do condutor não pode nulo!");
         Assert.isTrue(!condutor.getNome().equals(""),"O nome do condutor não pode nulo!");
         Assert.isTrue(condutor.getNome().length() <= 100 ,"O nome deve ter no máximo 100 digitos") ;
-
+        Assert.isTrue(condutor.getCpf()!=null,"O cpf do condutor não pode nulo!");
+        Assert.isTrue(!condutor.getCpf().equals(""),"O cpf do condutor não pode nulo!");
 
 
         if (this.validaCPF.isCPF(condutor.getCpf()) == true) {
@@ -70,7 +82,7 @@ public class  CondutorService {
         }
 
 
-        Assert.isTrue(!condutor.getTelefone().equals(""),"O telefone não pode ser nulo!");
+        Assert.isTrue(condutor.getTelefone()!=null,"O telefone não pode ser nulo!");
         Assert.isTrue(condutor.getTelefone().length() == 11 ,"O numero deve ter 11 digitos, contando o DDD") ;
 
         Assert.isTrue(condutor.getTelefone().substring(0,11).matches("[0-9]*"),"Telefone deve conter apenas números!");
@@ -81,23 +93,39 @@ public class  CondutorService {
 
 
 
+    @Transactional(rollbackFor = Exception.class)
+    public ResponseEntity<?> deletar(Long id) {
+        Condutor condutor = this.condutorRepository.findById(id).orElse(null);
 
-    public ResponseEntity<?> deletar(@PathVariable Long id) {
-        Optional<Condutor> condutorOptional = condutorRepository.findById(id);
-        if (condutorOptional.isPresent()) {
-            Condutor condutor = condutorOptional.get();
-            if (!condutor.isAtivo()) {
-                condutorRepository.delete(condutor);
-                return ResponseEntity.ok("Deletado com sucesso");
-            }
-            else {
+        if (condutor == null || condutor.getId() != (condutor.getId())) {
+            throw new RuntimeException("Não foi possivel identificar o registro informado");
+        }
+
+
+        List<Movimentacao> movimentacaoLista = this.condutorRepository.findMovimentacao(condutor);
+
+        if (movimentacaoLista.isEmpty()) {
+            if(condutor.isAtivo()) {
                 condutor.setAtivo(false);
-                condutorRepository.save(condutor);
+                this.condutorRepository.save(condutor);
                 return ResponseEntity.ok("Desativado com sucesso");
             }
+            this.condutorRepository.deleteById(id);
+            return ResponseEntity.ok("Deletado com sucesso");
         }
-        return ResponseEntity.ok("Não foi encontrado nenhum registro");
+
+        if(!condutor.isAtivo()) {
+            Assert.isTrue(movimentacaoLista.isEmpty(), "Condutor vinculado a uma movimentacao");
+            this.condutorRepository.deleteById(id);
+        }
+
+
+        condutor.setAtivo(false);
+        this.condutorRepository.save(condutor);
+        return ResponseEntity.ok("Desativado com sucesso");
+
     }
+
 
 
 

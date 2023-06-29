@@ -42,7 +42,7 @@ public class ConfiguracaoController {
     public ResponseEntity <?> cadastrar(@RequestBody final Configuracao configuracao){
         try {
             configuracaoRep.save(configuracao);
-            configuracaoServ.cadastrarConfig(configuracao);
+
             return ResponseEntity.ok("Registro cadastrado com sucesso");
         }
         catch (DataIntegrityViolationException e){

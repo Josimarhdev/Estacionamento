@@ -14,8 +14,8 @@ public class    Movimentacao extends AbstractEntity {
 
 
     @Getter @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "veiculo", nullable = false, unique = true)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "veiculo", nullable = false)
     private Veiculo veiculo;
     @Getter @Setter
     @ManyToOne(fetch = FetchType.EAGER)

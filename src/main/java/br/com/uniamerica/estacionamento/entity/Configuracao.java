@@ -6,6 +6,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.sql.Time;
 import java.time.LocalTime;
 import java.math.BigDecimal;
 @Entity
@@ -26,10 +27,10 @@ public class Configuracao extends AbstractEntity {
     private LocalTime fimExpediente;
     @Getter @Setter
     @Column(name = "tempoParaDesconto")
-    private LocalTime tempoParaDesconto;
+    private float tempoParaDesconto;
     @Getter @Setter
     @Column(name = "tempoDeDesconto")
-    private LocalTime tempoDeDesconto;
+    private float tempoDeDesconto;
 
     @Getter @Setter
     @Column(name = "gerarDesconto")

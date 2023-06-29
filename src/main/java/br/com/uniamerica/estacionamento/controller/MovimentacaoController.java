@@ -74,10 +74,16 @@ public class MovimentacaoController {
     }
 
 
-    @DeleteMapping("delete/{id}")
-    public ResponseEntity<?> deletaMovimentacao(@PathVariable Long id) {
-        return movimentacaoServ.deletar(id);
-
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(
+            @PathVariable("id") final Long id
+    ) {
+        try {
+            this.movimentacaoServ.deletar(id);
+            return ResponseEntity.ok("Registro excluido com sucesso.");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
+        }
     }
 
 
